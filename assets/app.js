@@ -17,26 +17,25 @@ import $ from "jquery";
 
 
 
-import HomeLanding from './home';
-HomeLanding().home.init();
-
+import Application from './Application';
+if ($("body").data("site") == "home") {
+    Application().home.init();
+}
+Application().module.init();
 
 
 // this "modifies" the jquery module: adding behavior to it
 // the bootstrap module doesn't export/return anything
 require('bootstrap');
-
+var ace = require('brace');
+require('brace/mode/javascript');
+require('brace/theme/monokai');
 // or you can include specific pieces
 // require('bootstrap/js/dist/tooltip');
 // require('bootstrap/js/dist/popover');
 
-$(document).ready(function() {
-    $('[data-toggle="popover"]').popover();
-});
 
-var ace = require('brace');
-require('brace/mode/javascript');
-require('brace/theme/monokai');
+
 
 /*var editor = ace.edit('javascript-editor');
 editor.getSession().setMode('ace/mode/javascript');

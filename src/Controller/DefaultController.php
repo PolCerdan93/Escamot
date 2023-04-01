@@ -18,8 +18,12 @@ class DefaultController extends AbstractController
     {
         $manifest_repo = $doctrine->getRepository(Manifest::class);
         $lastUpdate = $manifest_repo->findBy(array(),array('id'=>'DESC'),1,0);
-        $lastUpdate = $lastUpdate[0]->getContent();
-
+        if(count($lastUpdate)==0){
+            $lastUpdate = "Encara no existeix manifest";
+        }else{
+            $lastUpdate = $lastUpdate[0]->getContent();
+        }
+        
         return $this->render('default/index.html.twig', [
             'LatestUpdate' => $lastUpdate
         ]);

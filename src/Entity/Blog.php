@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\BlogRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -26,51 +28,16 @@ class Blog
     /**
      * @var string
      *
-     * @ORM\Column(name="title", type="string", length=255, nullable=false)
+     * @ORM\Column(name="title", type="string", length=255, nullable=true)
      */
     private $title;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="templatetype", type="string", length=255, nullable=false)
+     * @ORM\Column(name="templatetype", type="string", length=255, nullable=true)
      */
     private $templatetype;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="imghoritzontal1", type="string", length=255, nullable=true)
-     */
-    private $imghoritzontal1;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="imghoritzontal2", type="string", length=255, nullable=true)
-     */
-    private $imghoritzontal2;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="imgvertical1", type="string", length=255, nullable=true)
-     */
-    private $imgvertical1;
-
-     /**
-     * @var string
-     *
-     * @ORM\Column(name="content1", type="text", length=65535, nullable=true)
-     */
-    private $content1;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="content2", type="text", length=65535, nullable=true)
-     */
-    private $content2;
 
     /**
      * @var \DateTime
@@ -82,7 +49,7 @@ class Blog
     /**
      * @var booleam
      *
-     * @ORM\Column(name="activada", type="boolean", nullable=false)
+     * @ORM\Column(name="activada", type="boolean", nullable=true)
      * @Assert\Regex("/[0-1]+/")
      */
     private $activada;
@@ -90,7 +57,7 @@ class Blog
     /**
      * @var booleam
      *
-     * @ORM\Column(name="finalitzada", type="boolean", nullable=false)
+     * @ORM\Column(name="finalitzada", type="boolean", nullable=true)
      * @Assert\Regex("/[0-1]+/")
      */
     private $finalitzada;
@@ -104,6 +71,16 @@ class Blog
      * })
      */
     private $user;
+
+    /**
+     * @ORM\OneToMany(targetEntity=Contingut::class, mappedBy="entradaid", orphanRemoval=true)
+     */
+    private $continguts;
+
+    public function __construct()
+    {
+        $this->continguts = new ArrayCollection();
+    }
 
     public function getTitle(): ?string
     {
@@ -129,72 +106,13 @@ class Blog
         return $this;
     }
 
-    public function getImghoritzontal1(): ?string
-    {
-        return $this->imghoritzontal1;
-    }
 
-    public function setImghoritzontal1(string $imghoritzontal1): self
-    {
-        $this->imghoritzontal1 = $imghoritzontal1;
-
-        return $this;
-    }
-
-    public function getImghoritzontal2(): ?string
-    {
-        return $this->imghoritzontal2;
-    }
-
-    public function setImghoritzontal2(string $imghoritzontal2): self
-    {
-        $this->imghoritzontal2 = $imghoritzontal2;
-
-        return $this;
-    }
-
-    public function getImgvertical1(): ?string
-    {
-        return $this->imgvertical1;
-    }
-
-    public function setImgvertical1(string $imgvertical1): self
-    {
-        $this->imgvertical1 = $imgvertical1;
-
-        return $this;
-    }
-
-    public function getContent1(): ?string
-    {
-        return $this->content1;
-    }
-
-    public function setContent1(string $content1): self
-    {
-        $this->content1 = $content1;
-
-        return $this;
-    }
-
-    public function getContent2(): ?string
-    {
-        return $this->content2;
-    }
-
-    public function setContent2(string $content2): self
-    {
-        $this->content2 = $content2;
-
-        return $this;
-    }
-
-    public function getDataPublicació(): ?\DateTimeInterface
+    public function getDataPublicació(): ?\DateTime
     {
         return $this->DataPublicació;
     }
 
-    public function setDataPublicació(\DateTimeInterface $DataPublicació): self
+    public function setDataPublicació(\DateTime $DataPublicació): self
     {
         $this->DataPublicació = $DataPublicació;
 
@@ -233,6 +151,36 @@ class Blog
     public function setFinalitzada(bool $finalitzada): self
     {
         $this->finalitzada = $finalitzada;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Contingut>
+     */
+    public function getContinguts(): Collection
+    {
+        return $this->continguts;
+    }
+
+    public function addContingut(Contingut $contingut): self
+    {
+        if (!$this->continguts->contains($contingut)) {
+            $this->continguts[] = $contingut;
+            $contingut->setEntradaid($this);
+        }
+
+        return $this;
+    }
+
+    public function removeContingut(Contingut $contingut): self
+    {
+        if ($this->continguts->removeElement($contingut)) {
+            // set the owning side to null (unless already changed)
+            if ($contingut->getEntradaid() === $this) {
+                $contingut->setEntradaid(null);
+            }
+        }
 
         return $this;
     }

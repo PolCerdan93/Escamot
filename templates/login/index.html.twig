@@ -13,10 +13,14 @@
                     <div class="inset">
                         <h1 class="title"> Accedeix </h1>
                         {% if error %}
-                            <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                            <div style="margin-bottom:40px" class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
                         {% endif %}
                         {% for message in app.session.flashbag().get('Message')  %}
                             <h1>{{ message }}</h1>
+                        {% endfor %}
+                        
+                         {% for note in app.session.flashbag().get('note')  %}
+                            <div style="margin-bottom:40px" class="alert alert-danger">{{ note }}</div>
                         {% endfor %}
                         <form action="{{ path('app_login') }}" method="post">
                             <div id="Login">

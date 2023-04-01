@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Escamot{% endblock %}
+
+{% block body  %}
+<body data-site="home">
+
+<!--
+<section class="module" data-module="homeSlider">
+-->
+ <div class="swiper mySwiper" data-module="homeSlider">
+    <div class="swiper-wrapper" >
+        <div class="swiper-slide" style="background-color:grey"> 
+            <div class="inset">
+                {% if entrada->getTemplatetype == "Plantilla1" %} 
+                    <div class="title" data-swiper-parallax-x="-100" data-swiper-parallax-duration="1500"> {{ objentrada->getTitle() }} </div>
+                     <div class="title" data-swiper-parallax-x="-100" data-swiper-parallax-duration="1500"> {{ objentrada->getDataPublicació() | date('Y-m-d') }} </div>
+                    <div data-swiper-parallax-x="-500" data-swiper-parallax-duration="1500"> {{ objentrada->getUser()->getNickname() }} </div>
+                     {{ dump(objentrada->getContinguts()) }}
+                {% endif  %} 
+            </div>
+        </div>
+    </div>
+</div>
+    <!--
+</section>
+-->
+</body>
+{% endblock %}

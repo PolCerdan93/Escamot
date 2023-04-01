@@ -40,7 +40,7 @@ class SuccessController extends AbstractController
             //Session flash
             $session = new Session();
             $session->getFlashBag()->add('Message','manifest actualitzat');
-            return $this->redirectToRoute('blogstep2');
+                
         }
         
 
@@ -48,9 +48,12 @@ class SuccessController extends AbstractController
         $manifest_repo = $doctrine->getRepository(Manifest::class);
 
         $lastUpdate = $manifest_repo->findBy(array(),array('id'=>'DESC'),1,0);
-
-        $lastUpdate = $lastUpdate[0]->getContent();
-
+        if(count($lastUpdate)>0){
+            $lastUpdate = $lastUpdate[0]->getContent();
+        }   
+        else{
+            $lastUpdate = "crea un manifest!";
+        } 
         $userManifestUpdates = $user->getManifests()->getIterator();
      
         $userManifestUpdates->uasort(function ($first, $second) {

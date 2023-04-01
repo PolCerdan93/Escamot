@@ -3,6 +3,7 @@ import Swiper from 'swiper/bundle';
 import 'swiper/css/bundle';
 
 
+
 export default function() {
 
     var Application = {};
@@ -15,14 +16,6 @@ export default function() {
                 //self.homeSlider.AdjustWindow($('[data-module="loginSlider"]'));
             });
             self.homeSlider.init($('[data-module="homeSlider"]'));
-
-            $(function() {
-                $('[data-module]').each(function() {
-                    console.log($(this).attr('data-module'));
-                    Application.module[$(this).attr('data-module')]($(this));
-                });
-            });
-
         },
         homeSlider: {
             init: function($module) {
@@ -60,8 +53,6 @@ export default function() {
 
             initSwiper: function($module) {
                 console.log($module);
-                console.log("bon dia Pol");
-
                 var swiper = new Swiper($module[0], {
                     direction: "vertical",
                     speed: 1000,
@@ -77,7 +68,16 @@ export default function() {
     }
 
     Application.module = {
+        init: function() {
+            $(function() {
+                $('[data-module]').each(function() {
+                    console.log($(this).attr('data-module'));
+                    Application.module[$(this).attr('data-module')]($(this));
+                });
+            });
+        },
         form: function($module) {
+            
             var self = this;
             $module.find("input").on('keyup keypress blur change', function(e) {
                 self.checkEnteredText($(this));
@@ -90,28 +90,23 @@ export default function() {
                 $(this).removeClass();
                 $(this).addClass("btn btn-dark btn-block form-control");
             });
+
             var desplegable = $module.find(".select-transformation").data("replacedelement");
             $module.find(".select-transformation .option").on("click", function() {
                 var $parentChildren = $(this).parent().parent().children();
-                console.log($parentChildren);
                 $parentChildren.each(function(element, self) {
                     $(self).find(".option").removeClass("active");
                 });
                 $(this).addClass("active");
                 var optiontoCheck = $(this).data("value");
-                console.log(optiontoCheck);
-
                 $(desplegable).val(optiontoCheck);
-
-                console.log($(desplegable).parent());
-
             });
             if (desplegable) {
                 $(desplegable).parent().hide();
                 $module.find(".select-transformation").detach().insertBefore($(desplegable).parent().parent().find("Button[type=submit]"));
             }
-
             $module.find("form>div").removeClass("text-entered");
+
             $module.animate({ opacity: 1 }, 1000);
         },
         checkEnteredText: function($module) {
@@ -121,17 +116,22 @@ export default function() {
                 $module.parent().removeClass("text-entered");
             }
         },
-        aceEditor: function($module) {
+        aceEditor : function($module) {
+
             var ace = require('brace');
-            require('brace/mode/javascript');
-            require('brace/theme/monokai');
-            var editor = ace.edit('javascript-editor');
-            editor.getSession().setMode('ace/mode/javascript');
-            editor.setTheme('ace/theme/monokai');
-            editor.getSession().setUseWorker(false);
-            console.log(editor.getValue());
+            var editor = Array();
+            $module.find(".js-editor-selector").each(function(index) {
+                editor[index] = ace.edit('javascript-editor' + index);
+                editor[index].getSession().setMode('ace/mode/javascript');
+                editor[index].setTheme('ace/theme/monokai');
+                editor[index].getSession().setUseWorker(false);
+            });
             $module.find('form').on('submit', function() {
-                $(this).find("#content").val(editor.getValue());
+                $module.find(".js-editor-selector").each(function(index) {
+                    var input = $(this).data("vinculatedinput");
+                    $(input).val(editor[index].getValue());
+                    
+                });
                 return true;
             });
         },
@@ -139,11 +139,6 @@ export default function() {
             $module.fadeIn();
             setTimeout(function() { $module.fadeOut(); }, 5000);
         }
-
-
-
     }
-
-
     return Application;
 };
