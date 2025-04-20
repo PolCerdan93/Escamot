@@ -18,7 +18,7 @@ class Contingut
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=10000)
      */
     private $contingut;
 
@@ -27,11 +27,14 @@ class Contingut
      */
     private $ordre;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Blog::class, inversedBy="continguts")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    
+     /**
+      * @ORM\ManyToOne(targetEntity="App\Entity\Blog", inversedBy="continguts")
+      * @ORM\JoinColumn(onDelete="CASCADE")
+      */
     private $entradaid;
+
+    
 
     public function getId(): ?int
     {

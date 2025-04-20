@@ -38,7 +38,27 @@
         <div class="row">
             <div class="col">
                 <h1 class="title"> Històric d'entrades </h1>
-                
+                <div id="historic-entrades">
+                    {% for Entrada in currentEntrades %}
+                        <div class="entrades">
+                            
+                            <div class="dataactualizacio">  {{ Entrada.getDataPublicació() |date('d-m-Y') }} </div>
+                            <div class="entrada-content">
+                                <div class="titol">  {{ Entrada.getTitle() }} </div>
+                                <div class="buttons-entrades">
+                                    <a href="{{ path('entradastep2', {id: Entrada.getid()} )}}"> <button class="editar btn btn-outline-success">  Editar </button> </a>
+                                    <button class="eliminar btn btn-outline-danger">  Eliminar </button>
+                                    {% if Entrada.isActivada() %}
+                                        <button class="desactivar btn btn-outline-warning"> Desactivar </button>
+                                    {% else %}
+                                        <button class="activar btn btn-outline-warning">  Activar </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="user">  Redactat per {{ Entrada.getUser().getNickname() }} </div>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
         </div>
     </div>

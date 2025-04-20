@@ -1,42 +1,112 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Escamot{% endblock %}
+{% block title %}
+	Escamot
+{% endblock %}
 
-{% block body  %}
-<body data-site="home">
+{% block body %}
+	<body data-site="home">
+		<div class="swiper mySwiper" id="homeSlider">
+			<div class="swiper-wrapper">
+				<div class="swiper-slide">
+					<div class="catalunya">
+						<div class="container">
+							<div class="row">
+								<div class="col">
+									<div class="manifest" data-swiper-parallax-scale="0.15" data-swiper-parallax-opacity="0.5" data-swiper-parallax-duration="1500">
+										{{ LatestUpdate | raw }}
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="swiper-slide" style="background-color:#FFF">
 
-<!--
-<section class="module" data-module="homeSlider">
--->
- <div class="swiper mySwiper" data-module="homeSlider">
-      <div class="swiper-wrapper" >
-        <div class="swiper-slide">
-          <div class="catalunya">
-            <div class="container">
-              <div class="row">
-                <div class="col">
-                  <div class="manifest" data-swiper-parallax-scale="0.15" data-swiper-parallax-opacity="0.5" data-swiper-parallax-duration="1500">
-                    {{ LatestUpdate | raw }}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+					<div class="inset-horizontal-swiper">
+						<div class="swiper horizontalSwiper">
+							<div class="swiper-wrapper">
+								{% for noticia in TotesNoticies %}
+									<div class="swiper-slide" style="background-color:#FFF">
+										{% if noticia.getTemplatetype == "Plantilla1" %}
+											<article class="plantilla1">
+												<div class="container-fluid capcalera">
+													<div class="row">
+														<div class="col">
+															<div class="header" data-swiper-parallax-x="-250" data-swiper-parallax-duration="1500">
+																<h1>
+																	{{ noticia.getTitle() }}
+																</h1>
+															</div>
+														</div>
+														<div class="col info-publicacio">
+															<span class="date" data-swiper-parallax-x="-250" data-swiper-parallax-duration="1500">
+																{{ noticia.getDataPublicació() | date('Y-m-d') }}
+															</span>
+															<span class="autor" data-swiper-parallax-x="-250" data-swiper-parallax-duration="1500">
+																Redactat per:
+
+
+																{{ noticia.getUser().getNickname() }}
+															</span>
+														</div>
+													</div>
+												</div>
+												<div class="container-fluid">
+													<div class="row">
+														<div class="col" data-swiper-parallax-x="-250" data-swiper-parallax-duration="1500">
+															<div class="firstcontent">
+																{% for task in noticia.getContinguts() | filter(task => task.getOrdre() == 0) %}
+																	{{ task.getContingut() | raw }}
+																{% endfor %}
+															</div>
+															<div class="firstpicture">
+																{% for task in noticia.getContinguts() | filter(task => task.getOrdre() == 1) %}
+																	<img src="{{ images_directory ~ task.getContingut() }}">
+																{% endfor %}
+															</div>
+														</div>
+														<div class="col" data-swiper-parallax-x="-250" data-swiper-parallax-duration="1500">
+															<div class="secondpicture">
+																{% for task in noticia.getContinguts() | filter(task => task.getOrdre() == 2) %}
+																	<img src="{{ images_directory ~ task.getContingut() }}">
+																{% endfor %}
+															</div>
+															<div class="firstcontent">
+																{% for task in noticia.getContinguts() | filter(task => task.getOrdre() == 3) %}
+																	{{ task.getContingut() | raw }}
+																{% endfor %}
+															</div>
+														</div>
+													</div>
+												</div>
+											</article>
+										{% endif %}
+									</div>
+								{% endfor %}
+							</div>
+							<div class="swiper-button-next-horitzontal"></div>
+							<div class="swiper-button-prev-horitzontal"></div>
+							<div class="swiper-pagination swiper-pagination-horitzontal"></div>
+						</div>
+
+
+					</div>
+				</div>
+
+				<div class="swiper-slide" style="background-color:#EF4040">
+        <div id="newsletterForm" class="inset">
+          <h1> Subscriu-te a la nostra newsletter </h1>
+          <br>
+          <section class="form" data-module="form">
+              {{ form_start(newsletter) }}
+              {{ form_widget(newsletter) }}
+              {{ form_end(newsletter) }}
+          </section>
+        </div> 
         </div>
-        <div class="swiper-slide" style="background-color:grey"> 
-          <div class="inset">
-            <div data-swiper-parallax-x="-500" data-swiper-parallax-duration="1500">Slide 2</div>
-            <div class="title" data-swiper-parallax-x="-100" data-swiper-parallax-duration="1500">Slide 1</div>
-            <div data-swiper-parallax-opacity="0.5" data-swiper-parallax-duration="1500">I will change opacity</div>
-            <div data-swiper-parallax-scale="0.15" data-swiper-parallax-duration="1500">I will change scale</div>
-          </div>
-        </div>
-        <div class="swiper-slide" style="background-color:brown">Slide 3</div>
-      </div>
-      <div class="swiper-pagination"></div>
-    </div>
-    <!--
-</section>
--->
-</body>
+			</body>
+		</div>
+		<div class="swiper-pagination swiper-pagination-vertical"></div>
+	</body>
 {% endblock %}

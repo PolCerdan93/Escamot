@@ -14,11 +14,15 @@ body {
 
 body {
     background: #eee;
-    font-family: "Coco-sharp-light", Helvetica Neue, Helvetica, Arial, sans-serif;
+    font-family: "CaviarDreams", Helvetica Neue, Helvetica, Arial, sans-serif;
     font-size: 14px;
     color: #000;
     margin: 0;
     padding: 0;
+}
+
+.Dark{
+    background-color:#000 !important;
 }
 
 a {
@@ -59,7 +63,7 @@ a:hover {
 
 /* alert-message-success */
 
-.alert-message-success {
+.alert-message-success, .alert-message-danger {
     position: fixed;
     top: 25px;
     right: 25px;
@@ -71,12 +75,18 @@ a:hover {
     color: white;
     font-family: "Fjalla-One", sans-serif;
     z-index: 999999;
+    text-align: center;
     display: none;
 }
 
-.alert-message-success .wrap {
+.alert-message-danger {
+    background-color: #a41414;
+}
+
+.alert-message-success .wrap, .alert-message-danger .wrap  {
     height: 100%;
     width: 100%;
+
     display: -webkit-box;
     display: -webkit-flex;
     display: -moz-box;
@@ -92,6 +102,8 @@ a:hover {
     -moz-box-pack: center;
     -ms-flex-pack: center;
     justify-content: center;
+    padding-left:15px;
+    padding-right:15px;
 }
 
 
@@ -105,6 +117,10 @@ header {
     z-index: 123456;
     box-shadow: 0px 3px 12px -1px #8b8b8b;
     background-color: rgb(33 37 41 / 50%);
+}
+
+.header.preview{
+    background-color: #000;
 }
 
 .main-logo {
@@ -198,7 +214,8 @@ header {
     transition: all 0.3s ease;
 }
 
-.menu li:hover {
+.menu li:hover,
+.menu li.active {
     color: #fff;
     cursor:pointer;
 }
@@ -287,6 +304,15 @@ nav {
     font-size: 20px;
     letter-spacing: 0.1em;
     color: #bdbdbd;
+}
+
+
+/* BLOG */
+
+.inset-horizontal-swiper .swiper-horizontal > 
+.swiper-pagination-bullets.swiper-pagination-bullets-dynamic, 
+.swiper-pagination-horizontal.swiper-pagination-bullets.swiper-pagination-bullets-dynamic {
+    top:30px;
 }
 
 
@@ -473,9 +499,117 @@ nav {
 }
 
 
+.form .transformpictures .transformpchilddiv{
+    margin-bottom:15px;
+    border: 1px solid #000;
+    padding:15px;
+}
+
+.form .transformpictures img{
+    max-width:100%;
+}
+
+
 /* prova ace editor (Brace) */
 
 .js-editor-selector {
     width: 100%;
     height: 500px;
 }
+
+/* Blog historic entrades */
+
+#historic-entrades {
+    padding-top: 30px;
+}
+
+#historic-entrades .entrades{
+    border: 1px solid black;
+    padding: 20px 15px 8px 15px;
+    position: relative;
+    border-radius: 5px;
+    margin-bottom: 35px;
+}
+#historic-entrades .entrada-content{
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+#historic-entrades .buttons-entrades{
+    margin-left:auto;
+}
+
+#historic-entrades .dataactualizacio {
+    position: absolute;
+    top: -17px;
+    background-color: black;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+#historic-entrades .titol{
+    font-size: 22px;
+}
+
+#historic-entrades .user{
+    position: absolute;
+    top: -17px;
+    right: 50%;
+    background-color: black;
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 5px;
+    transform: translateX(50%);
+}
+/* Blog Plantilla 1 */
+
+.plantilla1{
+    font-family: "Fjalla-One", Arial, Helvetica, sans-serif;
+    height: 100%;
+    padding:30px;
+}
+.plantilla1 .header{
+    text-align: left;
+}
+
+.plantilla1 .firstpicture img,
+.plantilla1 .secondpicture img{
+    max-width: 100%;
+}
+    
+.plantilla1 .firstcontent,
+.plantilla1 .secondcontent{
+    text-align: justify;
+}
+.plantilla1 .capcalera{
+    margin-bottom: 30px;
+}
+
+.swiper-pagination-bullet{
+    background-color: #000;    
+}
+.swiper-pagination-horitzontal{
+    top: calc(100% - 25px)
+}
+
+.plantilla1 .info-publicacio{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    font-size: 14px;
+}
+
+#homeSlider .inset-horizontal-swiper{
+    height: -webkit-calc(100% - 85px);
+    height: -moz-calc(100% - 85px);
+    height: calc(100% - 85px);
+    -webkit-align-self: flex-end;
+    -ms-flex-item-align: end;
+    align-self: flex-end;
+    width:100%;
+}
+
+

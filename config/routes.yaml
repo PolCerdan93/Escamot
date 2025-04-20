@@ -2,6 +2,11 @@ index:
     path: /
     controller: App\Controller\DefaultController::index
 
+registrenewsletter:    
+    path: /registrenewsletter
+    controller: App\Controller\DefaultController::registreNewsletter
+    methods: [POST]
+
 app_login:
     path: /login
     controller: App\Controller\LoginController::index
@@ -36,6 +41,27 @@ entradastep2:
     methods: [POST,GET]
     requirements:
         id: '[0-9]+'  
+
+vistaprevia:    
+    path: /vistaprevia/{id}
+    controller: App\Controller\VistapreviaController::index
+    methods: [POST,GET]
+    requirements:
+        id: '[0-9]+' 
+
+guardarentrada : 
+    path: /guardarentrada/{id}
+    controller: App\Controller\VistapreviaController::guardarentrada
+    methods: [POST,GET]
+    requirements:
+        id: '[0-9]+' 
+
+publicarentrada : 
+    path: /publicarentrada/{id}
+    controller: App\Controller\VistapreviaController::publicarentrada
+    methods: [POST,GET]
+    requirements:
+        id: '[0-9]+' 
 
 logout:
     path: /logout

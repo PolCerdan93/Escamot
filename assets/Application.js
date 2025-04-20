@@ -1,4 +1,4 @@
-import $ from "jquery";
+import $, { event } from "jquery";
 import Swiper from 'swiper/bundle';
 import 'swiper/css/bundle';
 
@@ -13,9 +13,9 @@ export default function() {
             var self = this
             $(window).resize(function() {
                 console.log("resize callbacks");
-                //self.homeSlider.AdjustWindow($('[data-module="loginSlider"]'));
             });
-            self.homeSlider.init($('[data-module="homeSlider"]'));
+            self.homeSlider.init($('#homeSlider'));
+            self.newsletter();
         },
         homeSlider: {
             init: function($module) {
@@ -53,20 +53,127 @@ export default function() {
 
             initSwiper: function($module) {
                 console.log($module);
+                
                 var swiper = new Swiper($module[0], {
                     direction: "vertical",
                     speed: 1000,
                     parallax: true,
                     pagination: {
-                        el: ".swiper-pagination",
+                        el: ".swiper-pagination-vertical",
                         clickable: true,
                     },
+                    on: {
+                        init: function () {
+
+                            var swiper2 = new Swiper($module.find(".inset-horizontal-swiper .horizontalSwiper")[0], {
+                                speed: 1000,
+                                parallax: true,
+                                navigation: {
+                                    nextEl: ".swiper-button-next-horitzontal",
+                                    prevEl: ".swiper-button-prev-horitzontal",
+                                },
+                                pagination: {
+                                  el: ".swiper-pagination-horitzontal",
+                                  dynamicBullets: true,
+                                  clickable: true,
+                                },
+                                on: {
+                                    init: function () {
+                                        console.log("inicialitzat el swiper horitzontal!")
+                                    }
+                                },
+                              });
+                             
+                        },
+                        slideNextTransitionStart : function(swiper){
+                            Application.header.changeActiveNavbar(swiper.activeIndex)
+                            
+                        },
+                        slidePrevTransitionStart : function(swiper){
+                            Application.header.changeActiveNavbar(swiper.activeIndex)
+                        }
+                      },
                 });
 
-            }
-        },
-    }
+                
+                
+                
 
+            }
+           
+        },
+        newsletter : function(){
+            $("#newsletterForm").find("button").on("click",function(){
+                Application.home.subscribeNewsletter();
+            });
+            $("#newsletterForm").find("form").on("submit",function(){
+                event.preventDefault();
+                Application.home.subscribeNewsletter();
+            });
+        },
+        subscribeNewsletter : function(){
+            var mailvalue = $("#newsletterForm").find("#form_email").val();
+            console.log(Application.utils.validateEmail(mailvalue));
+            if(Application.utils.validateEmail(mailvalue)!=null){
+                
+                $.ajax({
+                    url: '/registrenewsletter',
+                    method: 'POST',
+                    data: {mail : mailvalue }
+                }).then(function(response) {
+                    console.log(response);
+                    Application.utils.displayMessageSuccess("Correu electònic subscrit correctament");
+                });
+
+                
+            }else{
+                Application.utils.displayMessageDanger("El Correu electònic introduit no es vàlid");
+            }
+        }
+    }
+    Application.header = {
+        init: function() {
+            var self = this
+            $(window).resize(function() {
+                console.log("resize callbacks");
+            });
+            self.menu($('header'));
+        },
+        menu : function($module){
+            $module.find("nav ul li").on("click", function($this){
+                
+                const swiper = document.querySelector('#homeSlider').swiper;
+                swiper.slideTo($(this).data("order"),1500)
+                //Application.header.changeActiveNavbar($(this).data("order"));
+            });
+        },
+        changeActiveNavbar: function($idx) {
+            if($idx==1){
+                $("header").addClass("Dark");
+            }else{
+                $("header").removeClass("Dark");
+            }
+            $("nav li").removeClass("active");
+            $("nav li").eq($idx).addClass("active");
+        }
+    },
+    Application.utils = {
+        displayMessageSuccess : function(message){
+            $("body").append( "<div class='alert-message-success'><div class='wrap'>"+ message +"</p>");
+            $(".alert-message-success").fadeIn();
+            setTimeout(function() { $(".alert-message-success").fadeOut(); }, 5000);
+        },
+        displayMessageDanger : function(message){
+            $("body").append( "<div class='alert-message-danger'><div class='wrap'>"+ message +"</p>");
+            $(".alert-message-danger").fadeIn();
+            setTimeout(function() { $(".alert-message-danger").fadeOut(); }, 5000);
+        },
+        validateEmail : function(email){
+            return email.match(
+              /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+            );
+        },
+    },
     Application.module = {
         init: function() {
             $(function() {
@@ -77,7 +184,6 @@ export default function() {
             });
         },
         form: function($module) {
-            
             var self = this;
             $module.find("input").on('keyup keypress blur change', function(e) {
                 self.checkEnteredText($(this));
@@ -106,6 +212,25 @@ export default function() {
                 $module.find(".select-transformation").detach().insertBefore($(desplegable).parent().parent().find("Button[type=submit]"));
             }
             $module.find("form>div").removeClass("text-entered");
+            console.log($module.find("input[type=file]"));
+            $module.find("input[type=file]").change( function(){
+                    var preview = $(this).data("vinculated-img");
+                    var file    = $(this)[0].files[0];
+                    var reader  = new FileReader();
+                    reader.onloadend = function () {
+                        $(preview).empty();
+                        var src = reader.result;
+                        var img = $('<div class="transformpchilddiv"><img class="transferpicture" src="'+src+'" /></div>'); 
+                        
+                        img.appendTo(preview);
+                    }
+                    console.log(file);
+                    if (file) {
+                      reader.readAsDataURL(file);
+                    } else {
+                      preview.src = "";
+                    }
+            });
 
             $module.animate({ opacity: 1 }, 1000);
         },
@@ -130,7 +255,6 @@ export default function() {
                 $module.find(".js-editor-selector").each(function(index) {
                     var input = $(this).data("vinculatedinput");
                     $(input).val(editor[index].getValue());
-                    
                 });
                 return true;
             });

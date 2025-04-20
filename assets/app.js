@@ -20,6 +20,7 @@ import $ from "jquery";
 import Application from './Application';
 if ($("body").data("site") == "home") {
     Application().home.init();
+    Application().header.init();
 }
 Application().module.init();
 

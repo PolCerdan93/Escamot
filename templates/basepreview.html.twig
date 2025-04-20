@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>
+            {% block title %}
+                Escamot 
+                            
+            {% endblock %}
+        </title>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+        <meta name="viewport" content="width=device-width, user-scalable=no">
+        {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
+        {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
+        {% endblock %}
+
+        {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
+        {% endblock %}
+    </head>
+    <body>
+
+        {{ include('svg/svgtemplate.html.twig') }}
+        {% block header %}
+            <header class="preview">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-1">
+                            <img src="{{ asset('build/images/logo.webp') }}" alt="escamot logo" class="main-logo">
+                        </div>
+                        <div class="col">
+                            <nav>
+                                <ul class="menu">
+                                    <li>
+                                        Manifest 
+                                                                            
+                                    </li>
+                                    <li class="active">
+                                        Blog 
+                                                                            
+                                    </li>
+                                    <li>
+                                        Newsletter 
+                                                                            
+                                    </li>
+                                </ul>
+                            </nav>
+
+                        </div>
+                        <div class="col-1">
+                            <ul class="user-menu">
+                                <li>
+                                    <a href="{{ path('entradastep2', {id: objentrada.id} ) }}">
+                                        <button class="btn btn-info">
+                                            Tornar 
+                                                                                    
+                                        </button>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ path('guardarentrada', {id: objentrada.id} ) }}">
+                                        <button class="btn btn-dark">
+                                            Guardar 
+                                                                                    
+                                        </button>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ path('publicarentrada', {id: objentrada.id} ) }}">
+                                        <button class="btn btn-success">
+                                            Publicar 
+                                                                                    
+                                        </button>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </header>
+        {% endblock %}
+        {% block body %}{% endblock %}
+    </body>
+</html>

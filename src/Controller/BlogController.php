@@ -60,9 +60,14 @@ class BlogController extends AbstractController
                 'id' => $Blog->getId(),
             ]); 
         }
-
+        $repository = $doctrine->getRepository(Blog::class);
+        $currentEntrades = $repository->findBy( 
+            ['finalitzada' => 1],
+            ['id' => 'DESC'],
+        );
         return $this->render('blog/index.html.twig', [
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'currentEntrades' => $currentEntrades,
         ]);
 
     }
@@ -73,23 +78,13 @@ class BlogController extends AbstractController
             
             $em = $doctrine->getManager();
             $contingutRepo = $doctrine->getRepository(Contingut::class);
-            $continguts = $contingutRepo->findBy([
+            $contingutsbbdd = $contingutRepo->findBy([
                 'entradaid' => $entrada->getId()    
+            ],[
+                'ordre' => 'ASC'
             ]);
-            if($continguts){
-                for($i=0;$i<count($continguts);$i++){
-                    $em->remove($continguts[$i]);
-                }
-                $em->flush();
-                
-            }
-
-            $filesystem = new Filesystem();
-            $path = $this->getParameter('kernel.project_dir') . '\public\uploads\images\\'; 
-            if($filesystem->exists($path)){
-    
-                $filesystem->remove([$path, $entrada->getId().'*.*']);
-            }
+           
+            $error = false;
 
             if($entrada->getTemplatetype()=="Plantilla1"){
 
@@ -97,82 +92,73 @@ class BlogController extends AbstractController
                 $contingut = array();
                 $contingut[0] = $request->request->get('_Primertext');
                 $contingut[1] = $request->files->get('_PrimeraImatge');
-                $contingut[2] = $request->request->get('_Segontext');
-                $contingut[3] = $request->files->get('_SegonaImatge');
-
-                $error = false;
-
-                if (strlen($contingut[0]) > 0 && strlen(trim($contingut[0])) == 0){
+                
+                $contingut[2] = $request->files->get('_SegonaImatge');
+                $contingut[3] = $request->request->get('_Segontext');
+              
+                if (strlen($contingut[0]) == 0 || strlen(trim($contingut[0])) == 0){
                     $session = new Session();
                     $session->getFlashBag()->add('note','no has introduit el primer text');
                     $error = true;
+                }else{
+                    //comprovo primer que no hi hagi un text
+                    if(isset($contingutsbbdd)){
+                        $this->borrarcontentifexists($contingutsbbdd,$entrada, $em,0);
+                    }
+                    // si no hi ha error grabo a la BBDD
+                    $this->gravarcontingut($contingut[0],$entrada,$em,0);
                 }
-                if (!$contingut[1] && $continguts[1]=="") {
+                if (!isset($contingut[1]) && !isset($contingutsbbdd[1])) {
                     $session = new Session();
                     $session->getFlashBag()->add('note','no has seleccionat la primera imatge');
                     $error = true;
                 }
-                if (strlen($contingut[2]) > 0 && strlen(trim($contingut[2])) == 0) {
+                if (strlen($contingut[3]) == 0 || strlen(trim($contingut[3])) == 0) {
                     $session = new Session();
                     $session->getFlashBag()->add('note','no has introduit el segon text');
                     $error = true;
+                }else{
+                    if(isset($contingutsbbdd)){
+                        $this->borrarcontentifexists($contingutsbbdd,$entrada, $em,3);
+                    }
+                    $this->gravarcontingut($contingut[3],$entrada,$em,3);
                 }
 
-                if (!$contingut[3]) {
+                if (!isset($contingut[2]) && !isset($contingutsbbdd[2])) {
                     $session = new Session();
                     $session->getFlashBag()->add('note','no has seleccionat la segona imatge');
                     $error = true;
                 }
 
+                //he de borrar sempre i quant el text nou no estigui en blanc
+
 
                 
-                if ($contingut[1]) {
-                    $originalFilename = pathinfo($contingut[1]->getClientOriginalName(), PATHINFO_FILENAME);
-                    $safeFilename = $slugger->slug($originalFilename);
-                    $newFilename = $entrada->getId() . '-' . $safeFilename.'-'.uniqid().'.'.$contingut[1]->guessExtension();
-
-                    try {
-                        $contingut[1]->move(
-                            $this->getParameter('images_directory'),
-                            $newFilename
-                        );
-                        $contingut[1] = $newFilename;
-                    } catch (FileException $e) {
-                        // ... handle exception if something happens during file upload
+                if (isset($contingut[1])) {
+                    if(isset($contingutsbbdd)){
+                        $this->borrarcontentifexists($contingutsbbdd,$entrada, $em,1);
+                        $this->buscarimatgeEliminar($contingutsbbdd,$entrada,$em,1);
                     }
+                    $this->crearnomimatgeimoure($contingut,$entrada,1,$slugger);
+                    $this->gravarcontingut($contingut[1],$entrada,$em,1);
                 }
 
-                if ($contingut[3]) {
-                    $originalFilename = pathinfo($contingut[3]->getClientOriginalName(), PATHINFO_FILENAME);
-                    $safeFilename = $slugger->slug($originalFilename);
-                    $newFilename = $entrada->getId() . '-' . $safeFilename.'-'.uniqid().'.'.$contingut[3]->guessExtension();
-
-                    try {
-                            $contingut[3]->move(
-                            $this->getParameter('images_directory'),
-                            $newFilename
-                        );
-                        $contingut[3] = $newFilename;
-                    } catch (FileException $e) {
-                        // ... handle exception if something happens during file upload
+                if (isset($contingut[2])) {
+                    if(isset($contingutsbbdd)){
+                        $this->borrarcontentifexists($contingutsbbdd,$entrada, $em,2);
+                        $this->buscarimatgeEliminar($contingutsbbdd,$entrada,$em,2);
                     }
+                    $this->crearnomimatgeimoure($contingut,$entrada,2,$slugger);
+                    $this->gravarcontingut($contingut[2],$entrada,$em,2);
                 }
-                for($i=0;$i<count($contingut);$i++){
-                    if($contingut[$i]){
-                        $contingutpujadaentrada = new Contingut();
-                        $contingutpujadaentrada->setContingut($contingut[$i]);
-                        $contingutpujadaentrada->setOrdre($i);
-                        $contingutpujadaentrada->setEntradaid($entrada);
-                        $em->persist($contingutpujadaentrada);
-                    }
-                }
+               
+                
                 $em->flush();
                 
                 if(!$error){
-                    echo "totok";exit;
-                    //return $this->redirectToRoute('vistaprevia', [
-                    //    'id' => $entrada->getId(),
-                    //]); 
+                    return $this->redirectToRoute('vistaprevia', [
+                        'id' => $entrada->getId(),
+                    ]); 
                 }
                 
             }
@@ -180,6 +166,7 @@ class BlogController extends AbstractController
                 
             }
         }
+        
         $contingut_repo = $doctrine->getRepository(Contingut::class);
         $continguts = $contingut_repo->findBy([
             'entradaid' => $entrada->getId()
@@ -195,16 +182,57 @@ class BlogController extends AbstractController
         
     }
 
-
-    public function vistaprevia(Blog $entrada): Response
+    public function borrar($content,$entrada,$em): void
     {
-        
-       
-
-        
-        return $this->render('blog/vistaprevia.html.twig', [
-            'objentrada' => $entrada
-        ]);
-
+        $em->remove($content);
+        $em->flush();   
     }
+    
+    public function borrarcontentifexists($content,$entrada, &$em,$posicio): void
+    {
+        for($i=0;$i<count($content);$i++){
+            if($content[$i]->getOrdre() == $posicio){
+                $this->borrar($content[$i],$entrada, $em);  
+            }
+        }
+    }
+
+    public function gravarcontingut($contingut,$entrada,&$em,$posicio){
+        $contingutpujadaentrada = new Contingut();
+        $contingutpujadaentrada->setContingut($contingut);
+        $contingutpujadaentrada->setOrdre($posicio);
+        $contingutpujadaentrada->setEntradaid($entrada);
+        $em->persist($contingutpujadaentrada);
+    }
+
+    public function buscarimatgeEliminar($contingutsbbdd,$entrada,&$em,$posicio){
+        for($i=0;$i<count($contingutsbbdd);$i++){
+            if($contingutsbbdd[$i]->getOrdre() == $posicio){
+                $this->eliminarimatge($contingutsbbdd[$i]->getContingut());
+            }
+        }
+    }
+
+    public function eliminarimatge($pathaeliminar){
+        $filesystem = new Filesystem();
+        $path = $this->getParameter('kernel.project_dir') . '\public\uploads\images\\'; 
+        if($filesystem->exists($path)){
+            $filesystem->remove([$path, $pathaeliminar]);
+        }
+    }
+
+    public function crearnomimatgeimoure(&$contingut,&$entrada,$posicio,&$slugger){
+
+        $originalFilename = pathinfo($contingut[$posicio]->getClientOriginalName(), PATHINFO_FILENAME);
+        $safeFilename = $slugger->slug($originalFilename);
+        $newFilename = $entrada->getId() . '-' . $posicio . '-' . $safeFilename.'-'.uniqid().'.'.$contingut[$posicio]->guessExtension();
+
+        $contingut[$posicio]->move(
+            $this->getParameter('images_directory'),
+            $newFilename
+        );
+        $contingut[$posicio] = $newFilename;
+    }
+
+    
 }

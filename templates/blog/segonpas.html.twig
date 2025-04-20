@@ -16,31 +16,47 @@
                             <div style="margin-bottom:40px" class="alert alert-danger">{{ note }}</div>
                     {% endfor %}
 
-                    {{ dump(continguts) }}
-
                     {% if plantilla == "Plantilla1" %}
                    <div data-module="aceEditor">
                         <form method="post" enctype="multipart/form-data">
                             <div id="segonpas">
                                 <div class="form-group mb-5">
                                     <p> Primer Text </p>
-                                    <input type="hidden" id="Primertext" name="_Primertext" value="{% if continguts[0] is defined %}{{ continguts[0].getContingut() }}{% endif %}">
-                                    <div id="javascript-editor0" class="js-editor-selector" data-vinculatedinput="#Primertext">{% if continguts[0] is defined %}{{ continguts[0].getContingut() }}{% endif %}
-                                    </div>
+                                    <input type="hidden" id="Primertext" name="_Primertext" value="{% if continguts is defined %}{% for contingut in continguts %}{% if contingut.ordre == 0  %}{{ contingut.contingut }}{% endif %}{% endfor %}{% endif %}"><div id="javascript-editor0" class="js-editor-selector" data-vinculatedinput="#Primertext">{% if continguts is defined %}{% for contingut in continguts %}{% if contingut.ordre == 0  %}{{ contingut.contingut }}{% endif %}{% endfor %}{% endif %}</div>
                                 </div>
                                 <div class="form-group text-entered mb-5">
                                      <label for="Primeraimatge"> Primera Imatge </label>
-                                    <input class="form-control" id="inp" type="file" id="PrimeraImatge" name="_PrimeraImatge" accept="image/png, image/jpeg" required>
+                                    <input class="form-control" type="file" id="PrimeraImatge" name="_PrimeraImatge" accept="image/png, image/jpeg" data-vinculated-img="#TransferPrimeraimatge">
                                 </div>
-                                <img class="transferpicture" id="picturetest" src="{{ asset('/uploads/images/' ~ continguts[1].getContingut()) }}" data-filename="{{continguts[1].getContingut()}}"/>
-                                <div class="form-group text-entered mb-5">
-                                    <p> Segon Text </p>
-                                    <input type="hidden" id="Segontext" name="_Segontext" value="{% if continguts[2] is defined %}{{ continguts[2].getContingut() }}{% endif %}">
-                                    <div id="javascript-editor1" class="js-editor-selector" data-vinculatedinput="#Segontext">{% if continguts[2] is defined %}{{ continguts[2].getContingut() }}{% endif %}</div>
+                                <div id="TransferPrimeraimatge" class="transformpictures">
+                                    {% if continguts is defined %}
+                                        {% for contingut in continguts %}
+                                            {% if contingut.ordre == 1  %}
+                                                <div class="transformpchilddiv">
+                                                    <img class="transferpicture" src="{{ asset('/uploads/images/' ~ contingut.contingut) }}" />
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
                                 </div>
                                 <div class="form-group text-entered mb-5">
                                     <label for="Segonaimatge"> Segona Imatge </label>
-                                    <input class="form-control" type="file" id="Segonaimatge" name="_SegonaImatge" accept="image/png, image/jpeg" required>
+                                    <input class="form-control" type="file" id="Segonaimatge" name="_SegonaImatge" accept="image/png, image/jpeg" data-vinculated-img="#TransferSegonaimatge">
+                                </div>
+                                 <div id="TransferSegonaimatge" class="transformpictures">
+                                    {% if continguts is defined %}
+                                        {% for contingut in continguts %}
+                                            {% if contingut.ordre == 2  %}
+                                               <div class="transformpchilddiv">
+                                                <img class="transferpicture" src="{{ asset('/uploads/images/' ~ contingut.contingut) }}" />
+                                            </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    {% endif %}
+                                </div>
+                                <div class="form-group text-entered mb-5">
+                                    <p> Segon Text </p>
+                                    <input type="hidden" id="Segontext" name="_Segontext" value="{% if continguts is defined %}{% for contingut in continguts %}{% if contingut.ordre == 3  %}{{ contingut.contingut }}{% endif %}{% endfor %}{% endif %}"><div id="javascript-editor1" class="js-editor-selector" data-vinculatedinput="#Segontext">{% if continguts is defined %}{% for contingut in continguts %}{% if contingut.ordre == 3  %}{{ contingut.contingut }}{% endif %}{% endfor %}{% endif %}</div>
                                 </div>
                                 <input type="hidden" name="entradaBlog" value="{{ EntradaBlogIdActual }}">
                                 <button type="submit">Vista previa</button>

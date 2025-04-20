@@ -72,8 +72,8 @@ class Blog
      */
     private $user;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Contingut::class, mappedBy="entradaid", orphanRemoval=true)
+     /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Contingut", mappedBy="entradaid")
      */
     private $continguts;
 
@@ -156,7 +156,7 @@ class Blog
     }
 
     /**
-     * @return Collection<int, Contingut>
+     * @return Collection|Contingut[]
      */
     public function getContinguts(): Collection
     {

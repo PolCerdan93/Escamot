@@ -1,0 +1,76 @@
+{% extends 'basepreview.html.twig' %}
+
+{% block title %}Escamot{% endblock %}
+
+{% block body  %}
+<body data-site="home">
+
+
+ <div class="swiper mySwiper" id="homeSlider">
+    <div class="swiper-wrapper" >
+        <div class="swiper-slide" style="background-color:grey"> 
+            <div class="inset-horizontal-swiper">
+                
+                <div class="swiper horizontalSwiper">
+                    <div class="swiper-wrapper">
+                        <div class="swiper-slide">
+                            {% if objentrada.getTemplatetype == "Plantilla1" %} 
+                                <article class="plantilla1">
+                                   <div class="container-fluid capcalera">
+                                        <div class="row">
+                                            <div class="col">
+                                                <div class="header" data-swiper-parallax-x="-250" data-swiper-parallax-duration="1500"> 
+                                                    <h1>{{ objentrada.getTitle() }} </h1>
+                                                </div>
+                                            </div>
+                                            <div class="col info-publicacio">
+                                                <span class="date" data-swiper-parallax-x="-250" data-swiper-parallax-duration="1500"> {{ objentrada.getDataPublicació() | date('Y-m-d') }} </span>
+                                                <span class="autor" data-swiper-parallax-x="-250" data-swiper-parallax-duration="1500"> Redactat per: {{ objentrada.getUser().getNickname() }} </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="container-fluid">
+                                        <div class="row">
+                                            <div class="col" data-swiper-parallax-x="-250" data-swiper-parallax-duration="1500">
+                                                <div class="firstcontent">
+                                                    {% for task in objentrada.getContinguts() | filter(task => task.getOrdre() == 0) %}
+                                                        {{ task.getContingut() | raw  }}   
+                                                    {% endfor %}
+                                                </div>
+                                                <div class="firstpicture">
+                                                    {% for task in objentrada.getContinguts() | filter(task => task.getOrdre() == 1) %}
+                                                        <img src="{{ images_directory ~ task.getContingut() }}">
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                            <div class="col" data-swiper-parallax-x="-250" data-swiper-parallax-duration="1500">
+                                                <div class="secondpicture">
+                                                    {% for task in objentrada.getContinguts() | filter(task => task.getOrdre() == 2) %}
+                                                        <img src="{{ images_directory ~ task.getContingut() }}">
+                                                    {% endfor %}
+                                                </div>
+                                                <div class="firstcontent">
+                                                    {% for task in objentrada.getContinguts() | filter(task => task.getOrdre() == 3) %}
+                                                        {{ task.getContingut() | raw }}   
+                                                    {% endfor %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </article>
+                            {% endif  %} 
+                        </div>
+                    </div>
+                    <div class="swiper-button-next-horitzontal"></div>
+                    <div class="swiper-button-prev-horitzontal"></div>
+                    <div class="swiper-pagination swiper-pagination-horitzontal"></div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    <div class="swiper-pagination swiper-pagination-vertical"></div>
+</div>
+ 
+</body>
+{% endblock %}
